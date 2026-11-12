@@ -10,8 +10,8 @@ import (
 )
 
 type Book struct {
-	ShelfID string `json:"shelfId"`
-	BookID  string `json:"bookId"`
+	ShelfID string `json:"shelfId" dynamodbav:"shelfId"`
+	BookID  string `json:"bookId" dynamodbav:"bookId"`
 }
 
 func CreateBook(book Book, db *dynamodb.Client) error {
@@ -20,7 +20,7 @@ func CreateBook(book Book, db *dynamodb.Client) error {
 		panic(err)
 	}
 	_, err = db.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		TableName: aws.String("Books"), Item: item,
+		TableName: aws.String("ShelfBooks"), Item: item,
 	})
 	if err != nil {
 		log.Printf("Couldn't add item to table. Here's why: %v\n", err)

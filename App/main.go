@@ -40,7 +40,7 @@ func main() {
 	})
 
 	http.HandleFunc(
-		"GET /api/shelvs/{shelfID}/books",
+		"POST /api/shelves/{shelfID}/books",
 		func(w http.ResponseWriter, r *http.Request) {
 			var test book.Book
 			/*err := json.NewDecoder(r.Body).Decode(&test)
@@ -49,7 +49,7 @@ func main() {
 				io.WriteString(w, `{"error":"Invalid request body"}`)
 				return
 			}*/
-			test.ShelfID = "shelf1"
+			test.ShelfID = r.PathValue("shelfID")
 			test.BookID = "book1"
 			err := book.CreateBook(test, db)
 			if err != nil {
