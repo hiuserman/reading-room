@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/hiuserman/book"
 )
 
@@ -29,11 +30,24 @@ func main() {
 			})
 		})
 		api.POST("/shelves/:shelfID/books", func(c *gin.Context) {
+
+			var input struct {
+				Title   string   `json:"title"`
+				Authors []string `json:"authors"`
+			}
+
+			bookID := uuid.New().String()
+
+			if err := c.ShouldBindJSON(&input); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+
 			test := book.Book{
 				ShelfID:   c.Param("shelfID"),
-				BookID:    "book1",
-				Title:     "The Great Gatsby",
-				Authors:   []string{"F. Scott Fitzgerald"},
+				BookID:    bookID,
+				Title:     input.Title,
+				Authors:   input.Authors,
 				CreatedAt: "2023-01-01T00:00:00Z",
 			}
 
