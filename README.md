@@ -1,8 +1,7 @@
 # 共同本棚・読書共有アプリ
-Go講座の最終課題。Goは本人が学習しながら実装し、Next.jsフロントはCodexが担当しています。現在は開発環境と登録処理の試作段階です。
+now:開発環境
 
-## 先生へ
-- [実装状況・次の相談事項](docs/development-status.md)
+## 
 - [現在のAPI仕様](docs/api.yaml)
 - [要件](docs/requirements.md) / [構成図](docs/architecture.md) / [DB設計案](docs/data-model.md)
 トップの / が実際の接続確認、/mock は将来UIの参考です。GitHubへのpushはソース共有でありWeb公開ではありません。
@@ -41,7 +40,7 @@ bind mountは自動再起動ではありません。
 ```powershell
 Invoke-RestMethod http://localhost:8080/api/shelvs/shelf1/books
 ```
-Booksで結果を確認してください。shelvsの綴りも現コードどおりです。
+Booksで結果を確認してください。
 DBデータはdocker/dynamodbに保存されGitには含めません。AWSアカウントやAPIキーは不要で、localの認証情報はローカル専用ダミーです。
 
 ## 検証
