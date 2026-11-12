@@ -1,0 +1,48 @@
+openapi: 3.0.3
+info:
+  title: 共同本棚の現在の試作API
+  version: 0.1.0
+  description: 現コードの契約。将来案はrequirements.md。
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/health:
+    get:
+      summary: DynamoDB疎通確認
+      responses:
+        '200':
+          description: 接続成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+        '503':
+          description: DB接続失敗
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [unavailable]
+  /api/shelvs/{shelfID}/books:
+    get:
+      deprecated: true
+      summary: 固定データを登録する試作（読取ではない）
+      description: URLのIDと本文は未使用。BooksにShelfID=shelf1、BookID=book1を保存・上書き。CORS未対応。本文はJSON文字列だがContent-Typeは未指定。
+      parameters:
+        - name: shelfID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Book created successfully
+        '500':
+          description: Failed to create book

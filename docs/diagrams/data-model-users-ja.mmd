@@ -1,0 +1,48 @@
+erDiagram
+    %% 複数ユーザー向け設計案。本人専用ライブラリを登録時に1件作成。
+    ユーザー ||--|| ライブラリ : "個人の蔵書を管理"
+    ライブラリ ||--o{ 本棚 : "棚を作成"
+    ライブラリ ||--o{ 所有本 : "本を登録"
+    書誌情報 ||--o{ 所有本 : "書誌を参照"
+    本棚 o|--o{ 所有本 : "同じ蔵書内で配置"
+
+    ユーザー {
+        string ユーザーID_userId PK "ログインした本人を識別"
+    }
+    ライブラリ {
+        string ライブラリID_libraryId PK
+        string 所有者ID_ownerUserId FK "ユーザーIDを参照。1ユーザーにつき1件に制限"
+    }
+    書誌情報 {
+        string 書誌ID_metadataId PK
+        string ISBN13_isbn13 UK "任意・ISBNがある場合のみ"
+        string 書名_title
+        string_array 著者_authors
+        number 総ページ数_pageCount "任意"
+        string 表紙URL_coverUrl "任意"
+        string 情報源_source "google_books・openbd・manual"
+        string 更新日時_updatedAt
+    }
+    本棚 {
+        string ライブラリID_libraryId PK "複合主キーの一部。所属ライブラリを参照"
+        string 本棚ID_shelfId PK "ソートキー。UUID"
+        string 本棚名_name
+        number 段数_rowCount
+        number バージョン_version "作成時1・更新ごとに増加"
+        string 作成日時_createdAt
+        string 更新日時_updatedAt
+    }
+    所有本 {
+        string ライブラリID_libraryId PK "複合主キーの一部。所属ライブラリを参照"
+        string 所有本ID_bookId PK "ソートキー。UUID"
+        string 書誌ID_metadataId FK "書誌情報を必ず1件参照"
+        string 読書状態_readingStatus "unread・reading・finished"
+        number 現在ページ_currentPage
+        map 個別補正_metadataOverrides "任意。表示時は共通情報より優先"
+        string 本棚ID_shelfId FK "任意。同じlibraryIdの棚を参照"
+        number 段番号_rowIndex "配置時のみ。0始まり"
+        number 段内順番_position "配置時のみ。0始まり"
+        number バージョン_version "作成時1・更新ごとに増加"
+        string 登録日時_registeredAt
+        string 更新日時_updatedAt
+    }

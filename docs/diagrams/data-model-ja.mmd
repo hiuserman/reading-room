@@ -1,0 +1,45 @@
+erDiagram
+    ユーザー ||--o{ 本棚メンバー : "参加"
+    共同本棚 ||--|{ 本棚メンバー : "作成者を含む"
+    共同本棚 ||--o{ 登録本 : "全冊を保持"
+    ユーザー ||--o{ 登録本 : "追加する"
+    登録本 ||--o{ 読書記録 : "人ごとの状態"
+    ユーザー ||--o{ 読書記録 : "自分の状態を更新"
+    ユーザー {
+        string userId PK "本人のID"
+        string displayName "表示名"
+        string avatarUrl "アイコン"
+    }
+    共同本棚 {
+        string shelfId PK "本棚ID"
+        string name "本棚名"
+        string createdBy FK "作成者ID"
+        string status "active・archived"
+        int memberCount "有効メンバー数"
+        int version "競合検出"
+    }
+    本棚メンバー {
+        string shelfId PK "複合主キー"
+        string userId PK "複合主キー"
+        string role "owner・member"
+        string status "active・left"
+        string joinedAt "参加日時"
+    }
+    登録本 {
+        string shelfId PK "複合主キー"
+        string bookId PK "複合主キー"
+        string title "書名"
+        string authors "著者一覧"
+        string isbn13 "ISBN・任意"
+        string coverUrl "表紙URL・任意"
+        string addedBy FK "追加者ID"
+        string addedAt "追加日時"
+    }
+    読書記録 {
+        string shelfBookKey PK "本棚IDと登録本ID"
+        string userId PK "複合主キー"
+        string status "未読・読書中・読了"
+        string finishedAt "最後の読了日時"
+        string updatedAt "更新日時"
+        int version "競合検出"
+    }

@@ -1,0 +1,47 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8080
+      WATCHPACK_POLLING: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+      - frontend-next:/app/.next
+
+  dynamodb-local:
+   command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+   image: "amazon/dynamodb-local:latest"
+   container_name: dynamodb-local
+   ports:
+     - "8000:8000"
+   volumes:
+     - "./docker/dynamodb:/home/dynamodblocal/data"
+   working_dir: /home/dynamodblocal
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    ports:
+      - "8001:8001"
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamodb-local:8000
+
+  backend:
+    container_name: test-backend
+    # backend/Dockerfile.devファイルを使ってビルドする
+    build:
+      context: ./App
+      dockerfile: Dockerfile
+    ports:
+      # ホストPCの8080番ポートを、コンテナの8080番ポートに接続する
+      - "8080:8080"
+    volumes:
+      # ホストPCのbackendフォルダとコンテナを同期する（ホットリロードのため）
+      - ./App:/app
+
+volumes:
+  frontend-node-modules:
+  frontend-next:

@@ -1,0 +1,39 @@
+erDiagram
+    ユーザー ||--|| ライブラリ : "個人の蔵書を所有"
+    ライブラリ ||--o{ 本棚 : "棚を作成"
+    ライブラリ ||--o{ 所有本 : "本を登録"
+    本棚 o|--o{ 所有本 : "同じライブラリ内で配置"
+    ユーザー ||--o{ 本棚メンバー : "共有を受ける"
+    本棚 ||--o{ 本棚メンバー : "権限を付与"
+
+    ユーザー {
+        string ユーザーID_userId PK
+    }
+    ライブラリ {
+        string ライブラリID_libraryId PK
+        string 所有者ID_ownerUserId FK "ユーザーにつき1件"
+    }
+    本棚 {
+        string ライブラリID_libraryId PK
+        string 本棚ID_shelfId PK "UUID"
+        string 本棚名_name
+        number 段数_rowCount
+        number バージョン_version
+    }
+    所有本 {
+        string ライブラリID_libraryId PK
+        string 所有本ID_bookId PK
+        map 登録時の書誌_metadata "ISBNは任意。書名・著者・総ページ数・表紙URL・情報源"
+        string 読書状態_readingStatus "所有者のみ"
+        number 現在ページ_currentPage "所有者のみ"
+        string 配置先_shelfId FK "未配置なら属性なし"
+        number 段_rowIndex
+        number 順番_position
+        number バージョン_version
+    }
+    本棚メンバー {
+        string 本棚ID_shelfId PK "本棚UUID。パーティションキー"
+        string ユーザーID_userId PK "共有先。ソートキー"
+        string 所有元_libraryId "対象棚の複合主キー解決用"
+        string 権限_role "viewer または editor"
+    }

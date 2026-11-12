@@ -1,0 +1,88 @@
+.app { min-height: 100vh; background: #f6f3ec; color: #3d443a; font-family: "Yu Gothic", sans-serif; }
+.library { min-width: 0; }
+.recentHint { color: #818578; font-size: 10px; margin: 20px 0 0; }
+.shelf.recentShelf { display: flex; gap: 20px; overflow-x: auto; padding: 18px 8px 0; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: #b9bca9 #f0eee5; }
+.recentShelf .bookButton { flex: 0 0 120px; scroll-snap-align: start; }
+.archive { border-top: 1px solid #dedfd3; margin-top: 32px; padding-top: 28px; }
+.filters { display: flex; gap: 12px; margin-top: 22px; }
+.filters label { display: flex; flex-direction: column; gap: 7px; color: #6c7564; font-size: 10px; }
+.filters label:first-child { flex: 1; }
+.filters input, .filters select { border: 1px solid #dedfd3; border-radius: 6px; padding: 10px; min-width: 0; width: 100%; background: #fffdf7; color: #3d443a; font: inherit; font-size: 12px; }
+.finishedFilter { display: flex; align-items: center; gap: 6px; margin: 17px 0; font-size: 11px; color: #6c7564; }
+.finishedFilter input { accent-color: #535f48; }
+.tableWrapper { overflow-x: auto; }
+.bookTable { border-collapse: collapse; width: 100%; font-size: 11px; text-align: left; }
+.bookTable th { font-size: 10px; font-weight: 500; color: #858b7b; padding: 12px 9px; background: #f1f1e8; white-space: nowrap; }
+.bookTable td { padding: 12px 9px; border-bottom: 1px solid #e9e8dd; line-height: 1.8; }
+.app .bookTable button { display: block; padding: 0; color: #475743; background: transparent; text-align: left; font-size: 12px; min-height: 28px; }
+.bookTable button:hover { text-decoration: underline; }
+.bookTable small { display: block; font-size: 10px; color: #8b8d7e; }
+.activeRow { background: #f0f2e8; }
+.pagination { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 18px; color: #818578; font-size: 10px; }
+.pagination > div { display: flex; gap: 8px; }
+.app .pagination button { background: #eeeee3; color: #53614b; padding: 9px 13px; }
+.app .pagination button:disabled { opacity: .4; cursor: default; }
+.empty { color: #818578; font-size: 12px; padding: 24px; text-align: center; }
+.app .finishedButton { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #bdc5b1; background: transparent; color: #535f48; font-size: 11px; }
+.app .finishedButton:disabled { opacity: .75; cursor: default; }
+.sidebar { position: sticky; top: 20px; }
+@media(max-width: 650px) { .sidebar { position: static; }.recentShelf .bookButton { flex-basis: 100px; }.filters { flex-wrap: wrap; }.bookTable td, .bookTable th { padding: 10px 6px; }.shelf.recentShelf { gap: 14px; } }
+.app button { width: auto; min-height: 0; font-weight: 500; }
+.app button:focus-visible, .app a:focus-visible, .app input:focus-visible { outline: 3px solid #b37243; outline-offset: 4px; }
+.topbar { height: 84px; border-bottom: 1px solid #dfdfd4; display: flex; align-items: center; gap: 24px; padding: 0 max(28px, calc((100vw - 1280px) / 2)); }
+.logo { color: #475743; text-decoration: none; font-family: "Yu Mincho", serif; font-size: 30px; letter-spacing: .12em; white-space: nowrap; }
+.logo span { font: 12px Georgia, serif; letter-spacing: .13em; margin-left: 12px; }
+.mockLabel { color: #85877b; font-size: 10px; letter-spacing: .04em; margin-left: auto; }
+.healthLink { color: #66715f; font-size: 11px; white-space: nowrap; }
+.main { max-width: 1280px; padding: 0 28px; margin: auto; }
+.roomIntro { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 44px 0 30px; }
+.eyebrow { margin: 0; font: 10px monospace; letter-spacing: .18em; color: #818578; }
+.roomIntro h1 { font-family: "Yu Mincho", serif; font-size: clamp(24px, 2.6vw, 36px); font-weight: 500; line-height: 1.6; letter-spacing: .04em; margin: 14px 0 8px; }
+.description { font-size: 12px; color: #7b7f73; margin: 0; line-height: 1.9; }
+.mobileBreak { display: none; }
+.members { display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 10px; color: #7b7f73; }
+.avatarStack { display: flex; padding-left: 8px; }
+.avatar { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; font-size: 12px; flex-shrink: 0; }
+.avatarStack .avatar { width: 42px; height: 42px; margin-left: -8px; border: 3px solid #f6f3ec; }
+.person0 { background: #788873; }.person1 { background: #c09a7e; }.person2 { background: #8797a0; }
+.now { display: flex; gap: 20px; align-items: center; border: 1px solid #dedfd3; background: #eeeee3; border-radius: 12px; padding: 17px 24px; margin-bottom: 34px; }
+.nowLabel { font-size: 11px; white-space: nowrap; margin-right: 8px; }
+.readingDot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #718760; margin-right: 7px; vertical-align: middle; }
+.app .nowPerson { padding: 0 18px; display: flex; align-items: center; gap: 11px; background: transparent; color: inherit; text-align: left; border-left: 1px solid #d5d8c9; border-radius: 0; flex: 1; }
+.nowPerson b { font-weight: 500; font-size: 10px; color: #7b7f73; }.nowPerson > span > span { display: block; font-size: 12px; margin-top: 4px; }
+.content { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 28px; align-items: start; }
+.library { background: #fffdf7; padding: 27px; border: 1px solid #e3dfd3; border-radius: 14px; }
+.libraryHeader { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+.libraryHeader h2 { margin: 0; font-size: 18px; font-weight: 600; }.libraryHeader h2 span { color: #999b8d; font-size: 11px; font-weight: 400; margin-left: 8px; }
+.libraryHeader p { font-size: 10px; color: #878a7d; margin: 9px 0 0; }
+.app .addButton { background: #525f48; color: #fffdf7; font-size: 11px; border-radius: 6px; padding: 12px 15px; white-space: nowrap; }
+.switcher { display: flex; gap: 4px; padding: 4px; background: #f0eee5; border-radius: 7px; width: fit-content; margin: 25px 0 12px; }
+.app .switcher button { background: transparent; color: #8b8d7e; padding: 9px 13px; font-size: 10px; border-radius: 4px; }
+.app .switcher button[aria-pressed="true"] { color: #43513b; background: #fffdf8; box-shadow: 0 1px 5px #44482012; }
+.shelf { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 24px; padding-top: 18px; }
+.app .bookButton { position: relative; display: flex; flex-direction: column; align-items: center; color: #747a68; background: transparent; border-radius: 0; padding: 12px 0 34px; text-align: center; min-width: 0; }
+.bookButton::after { content: ""; position: absolute; width: calc(100% + 24px); height: 9px; bottom: 50px; background: #d4c1a1; box-shadow: 0 7px 7px #67533b12; }
+.cover { z-index: 1; display: flex; flex-direction: column; align-items: center; width: min(100%, 130px); height: 177px; padding: 17px 10px; color: #fff9e8; border-radius: 2px 6px 5px 2px; box-shadow: inset 5px 0 #00000012, inset 7px 0 #ffffff12, 4px 3px 0 #e2dbcc, 7px 6px 13px #51432b1a; transition: transform .2s; }
+.bookButton:hover .cover, .selected .cover { transform: translateY(-7px); }
+.selected .cover { outline: 2px solid #889079; outline-offset: 5px; }
+.coverTop { font: 6px Georgia, serif; letter-spacing: .18em; opacity: .8; }
+.coverTitle { writing-mode: vertical-rl; font-family: "Yu Mincho", serif; letter-spacing: .14em; font-size: 19px; margin: 14px 0 auto; max-height: 110px; overflow: hidden; }
+.coverLine { width: 24px; height: 1px; background: #ffffff66; margin: 8px 0; }
+.coverAuthor { font-size: 8px; letter-spacing: .1em; }
+.bookMeta { padding-top: 22px; font-size: 9px; min-height: 35px; line-height: 1.5; }
+.shelfHint { text-align: center; font-size: 10px; color: #98998d; margin: 4px 0 0; }
+.memberShelves h3 { margin: 25px 0 0; display: flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 500; }.memberShelves .avatar { height: 24px; width: 24px; font-size: 9px; }
+.memberShelves .shelf { padding-top: 6px; }
+.detail { background: #eceee5; padding: 23px; border: 1px solid #dce0d2; border-radius: 14px; text-align: center; }
+.detail .eyebrow { font-size: 8px; }
+.detailCover { width: 104px; height: 145px; color: #fff9e8; margin: 26px auto 20px; border-radius: 2px 5px 5px 2px; box-shadow: inset 5px 0 #00000014, 5px 4px 0 #d9d9ca; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 14px; }
+.detailCover > span { font-family: "Yu Mincho", serif; writing-mode: vertical-rl; font-size: 18px; letter-spacing: .12em; overflow: hidden; max-height: 96px; }.detailCover small { font-size: 7px; margin-top: 10px; }
+.detail h2 { font-size: 19px; margin: 0; font-family: "Yu Mincho", serif; }.author { font-size: 10px; color: #828877; margin: 8px 0; }.quote { font-size: 10px; line-height: 1.8; color: #828877; margin: 18px 0; }
+.readerList { border-top: 1px solid #d5dacb; padding-top: 18px; color: #66745b; font-size: 10px; min-height: 42px; }
+.app .primaryButton { background: #535f48; width: 100%; padding: 13px 5px; font-size: 11px; border-radius: 6px; margin-top: 13px; }.app .primaryButton:hover, .app .addButton:hover { background: #414e37; }
+.app .reaction { background: transparent; color: #8b795c; width: 100%; font-size: 11px; padding: 14px 0 0; }.reaction[aria-pressed="true"] { color: #a45b3e; }
+.note { display: flex; gap: 12px; padding: 25px 7px; }.note > span { font-size: 30px; color: #a6ad97; }.note h3 { font-size: 11px; font-weight: 500; margin: 3px 0 8px; }.note p { color: #8c8e7e; font-size: 10px; line-height: 2; margin: 0; }
+.footer { display: flex; justify-content: space-between; gap: 15px; padding: 30px 0; font-size: 9px; color: #929685; }
+.addForm { margin-top: 20px; padding: 15px; background: #f2f1e9; border-radius: 8px; }.addForm label { font-size: 11px; display: block; margin-bottom: 10px; }.addForm > div { display: flex; gap: 8px; }.addForm input { width: 100%; min-width: 0; border: 1px solid #d6d8c9; border-radius: 4px; padding: 10px; background: #fffdf8; color: #3d443a; font: inherit; font-size: 12px; }.app .addForm button { white-space: nowrap; background: #535f48; font-size: 10px; padding: 10px; }.addForm small { display: block; font-size: 9px; margin-top: 9px; color: #878a7d; }
+@media(max-width: 900px) { .content { grid-template-columns: minmax(0, 1fr) 235px; gap: 16px; }.library { padding: 20px; }.shelf { column-gap: 16px; }.bookButton::after { width: calc(100% + 16px); }.cover { height: 155px; }.coverTitle { font-size: 16px; max-height: 91px; }.now { gap: 10px; padding: 15px; }.app .nowPerson { padding: 0 9px; gap: 8px; } }
+@media(max-width: 650px) { .topbar { height: 70px; padding: 0 18px; gap: 12px; }.logo { font-size: 24px; }.logo span { display: none; }.mockLabel { font-size: 8px; max-width: 175px; line-height: 1.7; }.healthLink { font-size: 9px; }.main { padding: 0 18px; }.roomIntro { padding: 28px 0 22px; }.roomIntro h1 { font-size: 25px; }.mobileBreak { display: block; }.members { display: none; }.description { font-size: 10px; }.now { flex-wrap: wrap; gap: 15px 0; padding: 16px 10px; margin-bottom: 22px; }.nowLabel { width: 100%; padding-left: 9px; }.app .nowPerson { padding: 0 8px; gap: 6px; }.nowPerson .avatar { width: 25px; height: 25px; font-size: 9px; }.nowPerson > span > span { font-size: 9px; }.content { grid-template-columns: 1fr; }.library { padding: 19px 16px; }.libraryHeader h2 { font-size: 16px; }.libraryHeader p { font-size: 9px; }.app .addButton { font-size: 10px; padding: 11px; }.app .switcher button { font-size: 9px; padding: 10px; }.shelf { gap: 0 13px; }.cover { height: 145px; padding: 14px 6px; }.coverTop { font-size: 5px; }.coverTitle { font-size: 15px; }.bookMeta { font-size: 8px; }.sidebar { display: grid; grid-template-columns: 1fr; }.detail { padding: 24px; }.detailCover { width: 115px; height: 155px; }.footer { flex-direction: column; gap: 8px; }.app button { min-height: 40px; } }
