@@ -5,7 +5,3 @@
 - MarshalMapにはdynamodbavタグがないので、属性名はShelfID/BookID。設計案ShelfBooksとは異なる。
 - 一覧・ISBN検索・状態共有・認証・AWS配備は未完成。
 - Goテストケースは未追加。CIはビルド等を確認するが、DB結合テストではない。
-
-## 次のレッスン
-登録をPOSTへ変更、shelvsの綴り修正、URL/JSON入力、dynamodbavタグ、context伝播、panicとエラー処理、重複・入力検証を相談する。
-GETでも書込みがあるため、自動確認はhealthだけにする。
