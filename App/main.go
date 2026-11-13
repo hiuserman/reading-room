@@ -58,6 +58,7 @@ func main() {
 
 			c.JSON(http.StatusOK, gin.H{"message": "Book created successfully"})
 		})
+
 	}
 	// Ginサーバーをポート8080で起動する
 	log.Println("Ginサーバーをポート8080で起動します")
