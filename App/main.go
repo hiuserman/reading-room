@@ -1,64 +1,66 @@
 package main
 
 import (
-	"context"
-	"io"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/hiuserman/book"
 )
 
 func main() {
+	router := gin.Default()
+	router.HandleMethodNotAllowed = true
 	db := dynamodb.New(dynamodb.Options{
 		Region:       "ap-northeast-1",
 		BaseEndpoint: aws.String("http://dynamodb-local:8000"),
 		Credentials:  credentials.NewStaticCredentialsProvider("local", "local", ""),
 	})
 
-	http.HandleFunc("GET /api/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Cache-Control", "no-store")
+	api := router.Group("/api")
+	{
+		api.GET("/health", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"status":  "ok",
+				"message": "Hello, World!",
+			})
+		})
+		api.POST("/shelves/:shelfID/books", func(c *gin.Context) {
 
-		ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
-		defer cancel()
+			var input struct {
+				Title   string   `json:"title"`
+				Authors []string `json:"authors"`
+			}
 
-		_, err := db.ListTables(ctx, &dynamodb.ListTablesInput{Limit: aws.Int32(1)})
-		if err != nil {
-			log.Printf("DynamoDB 接続失敗: %v", err)
-			w.WriteHeader(http.StatusServiceUnavailable)
-			io.WriteString(w, `{"status":"unavailable"}`)
-			return
-		}
+			bookID := uuid.New().String()
 
-		io.WriteString(w, `{"status":"ok"}`)
-	})
-
-	http.HandleFunc(
-		"GET /api/shelvs/{shelfID}/books",
-		func(w http.ResponseWriter, r *http.Request) {
-			var test book.Book
-			/*err := json.NewDecoder(r.Body).Decode(&test)
-			if err != nil {
-				w.WriteHeader(http.StatusBadRequest)
-				io.WriteString(w, `{"error":"Invalid request body"}`)
-				return
-			}*/
-			test.ShelfID = "shelf1"
-			test.BookID = "book1"
-			err := book.CreateBook(test, db)
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				io.WriteString(w, `{"error":"Failed to create book"}`)
+			if err := c.ShouldBindJSON(&input); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
-			w.WriteHeader(http.StatusCreated)
-			io.WriteString(w, `{"message":"Book created successfully"}`)
+
+			test := book.Book{
+				ShelfID:   c.Param("shelfID"),
+				BookID:    bookID,
+				Title:     input.Title,
+				Authors:   input.Authors,
+				CreatedAt: "2023-01-01T00:00:00Z",
+			}
+
+			if err := book.CreateBook(test, db); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create book"})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{"message": "Book created successfully"})
 		})
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	}
+	// Ginサーバーをポート8080で起動する
+	log.Println("Ginサーバーをポート8080で起動します")
+	router.Run(":8080")
 }
