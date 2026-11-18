@@ -7,8 +7,8 @@ type ConnectionState = "checking" | "connected" | "database-error" | "connection
 const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080").replace(/\/$/, "");
 const healthUrl = `${apiBaseUrl}/api/health`;
 const messages: Record<ConnectionState, { title: string; detail: string; label: string }> = {
-  checking: { title: "接続を確認しています", detail: "Go APIを経由して、DynamoDBの応答を確認します。", label: "確認中" },
-  connected: { title: "DynamoDB に接続できました", detail: "画面からAPI、データベースまでの通信ができています。", label: "接続済み" },
+  checking: { title: "接続を確認しています", detail: "Go APIの応答を確認します。現在のhealthはDB接続を検査しません。", label: "確認中" },
+  connected: { title: "Go APIに接続できました", detail: "画面からAPIへ通信できています。DBへの接続成功を示すものではありません。", label: "接続済み" },
   "database-error": { title: "DynamoDB に接続できません", detail: "Go APIは応答しています。DBの起動状態とバックエンドのログを確認してください。", label: "DB接続エラー" },
   "connection-error": { title: "APIとの接続を確認してください", detail: "APIの起動状態、接続先URL、CORS設定を確認して、もう一度お試しください。", label: "接続エラー" },
 };
@@ -89,14 +89,14 @@ export default function Home() {
       <section className="progress-card" aria-labelledby="progress-heading">
         <p className="eyebrow">IMPLEMENTATION STATUS</p>
         <h2 id="progress-heading">できることと、これから</h2>
-        <p className="detail">以下はコード確認時点（2026年11月12日）の状況です。接続確認の成功は、各機能の完成を意味しません。</p>
+        <p className="detail">以下はコード確認時点（2026年11月16日）の状況です。接続確認の成功は、各機能の完成を意味しません。</p>
         <dl className="progress-list">
-          <div><dt>DB疎通確認 <span className="badge connected">実装済み</span></dt><dd>GET /api/health でGoからDynamoDBの応答を確認します。</dd></div>
-          <div><dt>本の登録 <span className="badge">試作</span></dt><dd>固定の本棚ID・本IDをBooksテーブルへ保存する段階です。現在のGET APIは書込みを行うため、この画面からは実行しません。</dd></div>
-          <div><dt>一覧・ISBN検索・読書状態 <span className="badge">未実装</span></dt><dd>業務APIとの接続はこれから。まず登録と一覧取得を順に実装します。</dd></div>
+          <div><dt>API疎通確認 <span className="badge connected">実装済み</span></dt><dd>GET /api/health は固定のokを返します。現コードのCORS設定は未対応です。</dd></div>
+          <div><dt>本の登録 <span className="badge">試作</span></dt><dd>JSONのタイトル・著者をPOSTで受け取り、UUIDを付けてShelfBooksへ保存します。入力検証と日時は改善予定です。</dd></div>
+          <div><dt>一覧・投稿・読書状態 <span className="badge">未実装</span></dt><dd>一覧のDB関数はありますがGETルートは未登録です。投稿・現在ページ・読書状態のAPIはこれからです。</dd></div>
           <div><dt>認証・共有・AWS公開 <span className="badge">設計中</span></dt><dd>現在はDocker Composeによるローカル環境です。</dd></div>
         </dl>
-        <div className="reference-links"><a href="http://localhost:8001/" target="_blank" rel="noreferrer">DB管理画面を開く ↗</a><a href="/mock">将来UIのモックを見る →</a></div>
+        <div className="reference-links"><a href="http://localhost:8001/" target="_blank" rel="noreferrer">DB管理画面を開く ↗</a><a href="/mock">投稿・進捗の見本を見る →</a></div>
         <p className="detail">モックはサンプルデータのみで、DBとは未接続です。再読み込みすると初期状態に戻ります。</p>
       </section>
       <footer className="footer"><span>共同本棚 · 開発環境</span><span>React + TypeScript / Go / DynamoDB</span></footer>

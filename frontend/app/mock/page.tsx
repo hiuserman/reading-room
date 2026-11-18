@@ -1,171 +1,84 @@
 "use client";
-
 import { useState } from "react";
-import styles from "./room.module.css";
-
-type Book = { id: number; title: string; author: string; color: string; owner: number; subtitle: string };
-const people = ["あなた", "あおい", "りく"];
-const initialBooks: Book[] = [
-  { id: 1, title: "夜の余白", author: "遠野 灯", color: "#344e66", owner: 0, subtitle: "夜が静かになるころに。" },
-  { id: 2, title: "喫茶と雨の日", author: "小川 こよみ", color: "#b86c4b", owner: 1, subtitle: "いつもの席で、もう一杯。" },
-  { id: 3, title: "植物のとなり", author: "森野 葉", color: "#73856b", owner: 2, subtitle: "ゆっくり育つものについて。" },
-  { id: 4, title: "遠回りの地図", author: "岸 つむぎ", color: "#c1a364", owner: 0, subtitle: "知らない道を、歩いてみる。" },
-  { id: 5, title: "月曜日のスープ", author: "井上 なぎ", color: "#a78689", owner: 1, subtitle: "暮らしのなかの小さな話。" },
-  { id: 6, title: "海辺の手紙", author: "青井 航", color: "#738e9b", owner: 2, subtitle: "まだ会えないあなたへ。" },
+import styles from "./mobile.module.css";
+type Status = "reading" | "paused" | "finished";
+type Book = { id: number; title: string; author: string; owner: string; theme: number };
+type Post = { id: number; bookId: number; person: string; status: Status; page: number | null; comment: string; spoiler: boolean; time: string };
+const labels: Record<Status, string> = { reading: "読書中", paused: "サボり中", finished: "読了" };
+const seedBooks: Book[] = [
+ { id: 1, title: "夜の余白", author: "遠野 灯", owner: "あなた", theme: 0 },
+ { id: 2, title: "喫茶と雨の日", author: "小川 こよみ", owner: "あおい", theme: 1 },
+ { id: 3, title: "植物のとなり", author: "森野 葉", owner: "りく", theme: 2 },
+ { id: 4, title: "遠回りの地図", author: "岸 つむぎ", owner: "あなた", theme: 3 },
+ { id: 5, title: "月曜日のスープ", author: "井上 なぎ", owner: "あおい", theme: 1 },
+ { id: 6, title: "海辺の手紙", author: "青井 航", owner: "りく", theme: 0 },
 ];
-
-const pastTitles = ["春を待つ部屋", "小さな旅の記録", "台所の窓", "森へ帰る日", "午後の散歩", "星を拾う", "風の名前", "街の片隅で", "まどろみの庭", "手のひらの季節", "ひと駅先へ", "言葉の温度", "古い映画館", "朝の栞", "雨あがりの道"];
-const pastBooks: Book[] = pastTitles.map((title, index) => ({
-  id: index + 7,
-  title,
-  author: initialBooks[index % initialBooks.length].author,
-  color: initialBooks[index % initialBooks.length].color,
-  owner: index % people.length,
-  subtitle: "みんなのライブラリに残る一冊。",
-}));
-const demoBooks = [...initialBooks, ...pastBooks];
-const initialFinished = Object.fromEntries(
-  demoBooks.filter((book) => book.id >= 4).map((book) => [book.id, [book.owner]])
-);
-const recentLimit = 6;
-const pageSize = 8;
-
+const seedPosts: Post[] = [
+ { id: 3, bookId: 1, person: "あなた", status: "reading", page: 120, comment: "あと一章だけ、のつもりだった。", spoiler: false, time: "21:30" },
+ { id: 2, bookId: 2, person: "あおい", status: "paused", page: 48, comment: "今日はひと休み。続きは明日の自分へ。", spoiler: false, time: "20:10" },
+ { id: 1, bookId: 3, person: "りく", status: "finished", page: 216, comment: "最後の手紙が、最初の場面につながっていた。", spoiler: true, time: "18:45" },
+];
+function NavIcon({ kind }: { kind: "feed" | "write" | "books" }) {
+ return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">{kind === "feed" ? <><rect x="4" y="3" width="16" height="7" rx="2" /><rect x="4" y="14" width="16" height="7" rx="2" /></> : kind === "write" ? <><circle cx="12" cy="12" r="9" /><path d="M12 7v10M7 12h10" /></> : <><path d="M3 4h7v16H3zM14 5l5-1 3 15-5 1zM6 8h1M6 16h1" /></>}</svg>;
+}
 export default function MockRoom() {
-  const [layout, setLayout] = useState<"together" | "people">("people");
-  const [books, setBooks] = useState(demoBooks);
-  const [selectedId, setSelectedId] = useState(2);
-  const [myReading, setMyReading] = useState<number | null>(1);
-  const [reactions, setReactions] = useState<number[]>([]);
-  const [adding, setAdding] = useState(false);
-  const [title, setTitle] = useState("");
-  const [finished, setFinished] = useState<Record<number, number[]>>(initialFinished);
-  const [query, setQuery] = useState("");
-  const [member, setMember] = useState("all");
-  const [finishedOnly, setFinishedOnly] = useState(false);
-  const [page, setPage] = useState(0);
-  const selected = books.find((book) => book.id === selectedId)!;
-  const filteredBooks = books.filter((book) => {
-    const matchesText = `${book.title} ${book.author}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
-    const matchesMember = member === "all" || book.owner === Number(member) || finished[book.id]?.includes(Number(member));
-    const matchesFinished = !finishedOnly || (member === "all" ? finished[book.id]?.length > 0 : finished[book.id]?.includes(Number(member)));
-    return matchesText && matchesMember && matchesFinished;
-  });
-  const lastPage = Math.max(0, Math.ceil(filteredBooks.length / pageSize) - 1);
-  const currentPage = Math.min(page, lastPage);
-  const visibleBooks = filteredBooks.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
-
-  function markFinished() {
-    setFinished({ ...finished, [selected.id]: [...new Set([...(finished[selected.id] ?? []), 0])] });
-    if (myReading === selected.id) setMyReading(null);
-  }
-
-  function readers(bookId: number) {
-    const result: string[] = [];
-    if (myReading === bookId) result.push("あなた");
-    if (bookId === 2) result.push("あおい");
-    if (bookId === 3) result.push("りく");
-    return result;
-  }
-
-  function renderBook(book: Book) {
-    const currentReaders = readers(book.id);
-    return (
-      <button key={book.id} className={`${styles.bookButton} ${selectedId === book.id ? styles.selected : ""}`} onClick={() => setSelectedId(book.id)} aria-label={`${book.title}、${people[book.owner]}が追加。詳細を見る`} aria-pressed={selectedId === book.id}>
-        <span className={styles.cover} style={{ backgroundColor: book.color }}>
-          <span className={styles.coverTop}>BOOK & DAYS</span>
-          <span className={styles.coverTitle}>{book.title}</span>
-          <span className={styles.coverLine} />
-          <span className={styles.coverAuthor}>{book.author}</span>
-        </span>
-        <span className={styles.bookMeta}>{currentReaders.length > 0 ? <><span className={styles.readingDot} />{currentReaders.join("・")}が読書中</> : `${people[book.owner]}の一冊`}</span>
-      </button>
-    );
-  }
-
-  return (
-    <div className={styles.app}>
-      <header className={styles.topbar}><a href="/mock" className={styles.logo}>綴り<span>tsuzuri</span></a><span className={styles.mockLabel}>UI MOCK · 架空の本とメンバー / 更新でリセット</span><a className={styles.healthLink} href="/">接続確認 ↗</a></header>
-      <main className={styles.main}>
-        <div className={styles.roomIntro}>
-          <div><p className={styles.eyebrow}>OUR LITTLE READING ROOM</p><h1>いつもの３人、<br className={styles.mobileBreak} />それぞれの一冊。</h1><p className={styles.description}>離れていても、同じ本棚で。最近なに読んでる？</p></div>
-          <div className={styles.members}><div className={styles.avatarStack}>{people.map((person, index) => <span key={person} className={`${styles.avatar} ${styles[`person${index}`]}`} title={person}>{person.slice(0, 1)}</span>)}</div><span>いつもの３人の本棚</span></div>
-        </div>
-
-        <section className={styles.now} aria-label="いま読んでいる本">
-          <span className={styles.nowLabel}><span className={styles.readingDot} />いま、読んでる</span>
-          {people.map((person, index) => {
-            const book = books.find((item) => item.id === (index === 0 ? myReading : index + 1));
-            return <button key={person} className={styles.nowPerson} onClick={() => book && setSelectedId(book.id)} disabled={!book}><span className={`${styles.avatar} ${styles[`person${index}`]}`}>{person.slice(0, 1)}</span><span><b>{person}</b><span>{book?.title ?? "ひと休み中"}</span></span></button>;
-          })}
-        </section>
-
-        <div className={styles.content}>
-          <section className={styles.library} aria-label="みんなの本棚">
-            <div className={styles.libraryHeader}><div><h2>みんなの本棚 <span>{books.length}冊</span></h2><p>読んだ日も、まだ読んでいない日も。</p></div><button className={styles.addButton} onClick={() => setAdding(!adding)} aria-expanded={adding}>{adding ? "閉じる" : "＋ 本を置く"}</button></div>
-            {adding && <form className={styles.addForm} onSubmit={(event) => { event.preventDefault(); if (!title.trim()) return; const id = Math.max(...books.map((book) => book.id)) + 1; setBooks([{ id, title: title.trim(), author: "あなたが追加", color: "#6b7b69", owner: 0, subtitle: "本棚に、新しい一冊。" }, ...books]); setSelectedId(id); setTitle(""); setAdding(false); }}><label htmlFor="book-title">モックに置く本のタイトル</label><div><input id="book-title" value={title} maxLength={30} onChange={(event) => setTitle(event.target.value)} placeholder="気になっている一冊" required /><button type="submit">本棚に置く</button></div><small>製品版ではISBN検索から追加する想定です。</small></form>}
-            <div className={styles.switcher} role="group" aria-label="本棚の表示案"><button aria-pressed={layout === "together"} onClick={() => setLayout("together")}>01 みんなでひとつ</button><button aria-pressed={layout === "people"} onClick={() => setLayout("people")}>02 ひとりずつの段</button></div>
-            <p className={styles.recentHint}>追加した順に直近{recentLimit}冊 · 横にスクロール →</p>
-            {layout === "together" ? (
-              <div className={`${styles.shelf} ${styles.recentShelf}`} tabIndex={0} role="region" aria-label="みんなの最近の6冊">
-                {books.slice(0, recentLimit).map(renderBook)}
-              </div>
-            ) : (
-              <div className={styles.memberShelves}>
-                {people.map((person, index) => (
-                  <section key={person}>
-                    <h3><span className={`${styles.avatar} ${styles[`person${index}`]}`}>{person.slice(0, 1)}</span>{person}の段</h3>
-                    <div className={`${styles.shelf} ${styles.recentShelf}`} tabIndex={0} role="region" aria-label={`${person}の最近の6冊`}>
-                      {books.filter((book) => book.owner === index).slice(0, recentLimit).map(renderBook)}
-                    </div>
-                  </section>
-                ))}
-              </div>
-            )}
-            <p className={styles.shelfHint}>ここに並びきらない本も、下のライブラリで見つかります。</p>
-
-            <section className={styles.archive} aria-labelledby="library-title">
-              <div className={styles.libraryHeader}>
-                <div><h2 id="library-title">みんなのライブラリ <span>{books.length}冊</span></h2><p>これまでの一冊を、ここに残しておこう。</p></div>
-              </div>
-              <div className={styles.filters}>
-                <label>本を探す<input value={query} onChange={(event) => { setQuery(event.target.value); setPage(0); }} placeholder="タイトル・著者で検索" /></label>
-                <label>メンバー<select value={member} onChange={(event) => { setMember(event.target.value); setPage(0); }}><option value="all">みんな</option>{people.map((person, index) => <option key={person} value={index}>{person}</option>)}</select></label>
-              </div>
-              <label className={styles.finishedFilter}><input type="checkbox" checked={finishedOnly} onChange={(event) => { setFinishedOnly(event.target.checked); setPage(0); }} />読了した本だけ</label>
-              <div className={styles.tableWrapper}>
-                <table className={styles.bookTable}>
-                  <thead><tr><th scope="col">タイトル / 著者</th><th scope="col">追加した人</th><th scope="col">読了した人</th></tr></thead>
-                  <tbody>{visibleBooks.map((book) => (
-                    <tr key={book.id} className={book.id === selectedId ? styles.activeRow : ""}>
-                      <td><button onClick={() => setSelectedId(book.id)}>{book.title}</button><small>{book.author}</small></td>
-                      <td>{people[book.owner]}</td>
-                      <td>{finished[book.id]?.map((person) => people[person]).join("・") || "—"}</td>
-                    </tr>
-                  ))}</tbody>
-                </table>
-              </div>
-              {filteredBooks.length === 0 && <p className={styles.empty} role="status">条件に合う本はありません。</p>}
-              <div className={styles.pagination}>
-                <span aria-live="polite">{filteredBooks.length}冊 · {currentPage + 1} / {lastPage + 1}ページ</span>
-                <div><button disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>前へ</button><button disabled={currentPage === lastPage} onClick={() => setPage(currentPage + 1)}>次へ</button></div>
-              </div>
-            </section>
-          </section>
-
-          <aside className={styles.sidebar} aria-label="選んだ本の詳細">
-            <section className={styles.detail}>
-              <p className={styles.eyebrow}>PICKED FROM OUR SHELF</p><div className={styles.detailCover} style={{ backgroundColor: selected.color }}><span>{selected.title}</span><small>{selected.author}</small></div>
-              <h2>{selected.title}</h2><p className={styles.author}>{selected.author}</p><p className={styles.quote}>{selected.subtitle}</p>
-              <div className={styles.readerList} aria-live="polite">{readers(selected.id).length > 0 ? `${readers(selected.id).join("と")}が読んでいます` : "次は、誰の一冊になるだろう。"}</div>
-              <button className={styles.primaryButton} onClick={() => setMyReading(myReading === selected.id ? null : selected.id)}>{myReading === selected.id ? "読書中を解除する" : "私もこれを読んでる"}</button>
-              <button className={styles.finishedButton} disabled={finished[selected.id]?.includes(0)} onClick={markFinished}>{finished[selected.id]?.includes(0) ? "✓ あなたは読了済み" : "読み終わった！"}</button>
-              <button className={styles.reaction} aria-pressed={reactions.includes(selected.id)} onClick={() => setReactions(reactions.includes(selected.id) ? reactions.filter((id) => id !== selected.id) : [...reactions, selected.id])}>{reactions.includes(selected.id) ? "♥ 気になる！を送りました" : "♡ 気になる！"}</button>
-            </section>
-            <section className={styles.note}><span>↳</span><div><h3>本棚から、会話がはじまる。</h3><p>「それ、気になってた」<br />次に会ったら、本の話をしよう。</p></div></section>
-          </aside>
-        </div>
-        <footer className={styles.footer}><span>綴り — 本と、いつもの人たち。</span><span>デザイン検討用 / リアクションは提案機能</span></footer>
-      </main>
-    </div>
-  );
+ const [tab, setTab] = useState<"feed" | "write" | "books">("feed");
+ const [books, setBooks] = useState(seedBooks);
+ const [posts, setPosts] = useState(seedPosts);
+ const [person, setPerson] = useState("みんな");
+ const [selected, setSelected] = useState(1);
+ const [status, setStatus] = useState<Status>("reading");
+ const [page, setPage] = useState("");
+ const [comment, setComment] = useState("");
+ const [spoiler, setSpoiler] = useState(false);
+ const [open, setOpen] = useState<number[]>([]);
+ const [query, setQuery] = useState("");
+ const [notice, setNotice] = useState("");
+ const [error, setError] = useState("");
+ const [adding, setAdding] = useState(false);
+ const [title, setTitle] = useState("");
+ const [author, setAuthor] = useState("");
+ const visiblePosts = posts.filter(post => person === "みんな" || post.person === person).slice(0, 6);
+ const foundBooks = books.filter(book => (book.title + " " + book.author).includes(query.trim()));
+ function navigate(next: typeof tab) { setTab(next); setError(""); window.scrollTo({ top: 0 }); }
+ return <div className={styles.desktop}><div className={styles.phone}>
+ <header className={styles.header}><a href="/mock" aria-label="綴り ホーム">綴り<span>つづり</span></a><span className={styles.room}>いつもの本棚 <span>3人</span></span><a href="/" className={styles.devLink}>開発</a></header>
+ <div className={styles.demo}>操作できる見本 · 架空データ / 再読込でリセット</div>
+ <main>
+ {notice && <p className={styles.notice} role="status">{notice}</p>}
+ {tab === "feed" && <section aria-label="みんなの近況">
+ <div className={styles.day}><div><small>READING DAYS</small><h1>きょう、どこまで？</h1></div><span>最近の記録</span></div>
+ <div className={styles.people} role="group" aria-label="投稿者で絞り込む">{["みんな", "あなた", "あおい", "りく"].map(name => <button key={name} aria-pressed={person === name} onClick={() => setPerson(name)}>{name}</button>)}</div>
+ <div className={styles.feed}>{visiblePosts.map(post => { const book = books.find(item => item.id === post.bookId)!;
+ return <article key={post.id} className={styles.card + " " + styles["theme" + book.theme]}>
+ <div className={styles.art} aria-hidden="true"><div /><i /><b /></div>
+ <div className={styles.cardTop}><span><i>{post.person.slice(0, 1)}</i>{post.person}</span><span>{labels[post.status]}</span></div>
+ <div className={styles.cardBody}><p className={styles.bookTitle}>{book.title}<small>{book.author}</small></p><time>{post.time}</time><p className={styles.progress}>{post.page === null ? "ページ未設定" : post.page + "ページまで"}<span> · {labels[post.status]}</span></p>
+ {post.spoiler ? <><button className={styles.spoiler} aria-expanded={open.includes(post.id)} onClick={() => setOpen(open.includes(post.id) ? open.filter(id => id !== post.id) : [...open, post.id])}>{open.includes(post.id) ? "ひとことを隠す" : "ネタバレあり · タップで読む"}</button>{open.includes(post.id) && <p className={styles.comment}>{post.comment}</p>}</> : post.comment && <p className={styles.comment}>{post.comment}</p>}
+ </div></article>; })}</div>
+ {visiblePosts.length === 0 && <p className={styles.empty}>まだ記録がありません。</p>}
+ <p className={styles.end}>直近6件まで。読み終えた本は「本」に残ります。</p><button className={styles.inlineWrite} onClick={() => navigate("write")}>今日のひとことを残す ＋</button>
+ </section>}
+ {tab === "write" && <section className={styles.panel}><p className={styles.eyebrow}>MY READING</p><h1>栞を、ここに。</h1><p className={styles.help}>読んだ日も、サボった日も。短い記録をひとつ。</p>
+ <form onSubmit={event => {
+ event.preventDefault(); const value = page.trim() === "" ? null : Number(page);
+ if (value !== null && (!Number.isSafeInteger(value) || value < 0)) { setError("ページは0以上の整数にしてください。"); return; }
+ const post: Post = { id: Math.max(0, ...posts.map(p => p.id)) + 1, bookId: selected, person: "あなた", status, page: value, comment: comment.trim(), spoiler: spoiler && comment.trim() !== "", time: new Date().toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" }) };
+ setPosts([post, ...posts]); setComment(""); setPage(""); setSpoiler(false); setPerson("みんな"); setNotice("見本に記録しました。DBには保存されません。"); navigate("feed");
+ }}>
+ <label>本<select value={selected} onChange={e => setSelected(Number(e.target.value))}>{books.map(book => <option key={book.id} value={book.id}>{book.title}</option>)}</select></label>
+ <label>いまの状態<select value={status} onChange={e => setStatus(e.target.value as Status)}>{Object.entries(labels).map(([value, name]) => <option key={value} value={value}>{name}</option>)}</select></label>
+ <label>現在ページ（任意）<input type="number" min="0" step="1" value={page} onChange={e => setPage(e.target.value)} placeholder="例：120" /></label>
+ <label>ひとこと（任意）<textarea rows={4} maxLength={200} value={comment} onChange={e => setComment(e.target.value)} placeholder="今日の一冊に、ひとこと。" /><small>{comment.length} / 200</small></label>
+ <label className={styles.check}><input type="checkbox" checked={spoiler} onChange={e => setSpoiler(e.target.checked)} />ネタバレを含むので、最初は隠す</label>
+ {error && <p role="alert">{error}</p>}<button className={styles.primary} type="submit">記録する</button></form></section>}
+ {tab === "books" && <section className={styles.panel}><p className={styles.eyebrow}>OUR LIBRARY</p><div className={styles.libraryTitle}><h1>これまでの本。</h1><button onClick={() => setAdding(!adding)} aria-expanded={adding}>{adding ? "閉じる" : "＋ 追加"}</button></div><p className={styles.help}>みんなの一冊を、ずっとここに。{books.length}冊</p>
+ {adding && <form className={styles.add} onSubmit={e => { e.preventDefault(); if (!title.trim()) return; const id = Math.max(...books.map(b => b.id)) + 1; setBooks([{ id, title: title.trim(), author: author.trim() || "著者未設定", owner: "あなた", theme: id % 4 }, ...books]); setTitle(""); setAuthor(""); setAdding(false); setNotice("見本の本を追加しました。DBには保存されません。"); }}>
+ <label>タイトル<input required maxLength={100} value={title} onChange={e => setTitle(e.target.value)} /></label><label>著者<input maxLength={100} value={author} onChange={e => setAuthor(e.target.value)} /></label><button className={styles.primary} type="submit">見本に本を追加</button></form>}
+ <label className={styles.search}>本を探す<input value={query} onChange={e => setQuery(e.target.value)} placeholder="タイトル・著者" /></label>
+ <ul className={styles.books}>{foundBooks.map(book => <li key={book.id}><button onClick={() => { setSelected(book.id); navigate("write"); }}><span className={styles.miniCover + " " + styles["theme" + book.theme]} aria-hidden="true">{book.title.slice(0, 1)}</span><span><strong>{book.title}</strong><small>{book.author}</small><small>{book.owner}が追加{posts.some(p => p.bookId === book.id && p.person === "あなた" && p.status === "finished") ? " · あなたは読了済み" : ""}</small></span><span aria-hidden="true">›</span></button></li>)}</ul>
+ {foundBooks.length === 0 && <p className={styles.empty}>該当する本はありません。</p>}</section>}
+ </main>
+ <nav className={styles.nav} aria-label="メインメニュー">{([{ id: "feed", label: "みんな" }, { id: "write", label: "記録する" }, { id: "books", label: "本" }] as const).map(item => <button key={item.id} aria-current={tab === item.id ? "page" : undefined} onClick={() => navigate(item.id)}><NavIcon kind={item.id} /><span>{item.label}</span></button>)}</nav>
+ </div></div>;
 }

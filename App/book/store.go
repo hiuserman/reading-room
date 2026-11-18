@@ -10,14 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-type Book struct {
-	ShelfID   string   `json:"shelfId" dynamodbav:"shelfId"`
-	BookID    string   `json:"bookId" dynamodbav:"bookId"`
-	Title     string   `json:"title" dynamodbav:"title"`
-	Authors   []string `json:"authors" dynamodbav:"authors"`
-	CreatedAt string   `json:"createdAt" dynamodbav:"createdAt"`
-}
-
 func CreateBook(book Book, db *dynamodb.Client) error {
 	item, err := attributevalue.MarshalMap(book)
 	if err != nil {

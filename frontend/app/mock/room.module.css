@@ -1,4 +1,6 @@
 .app { min-height: 100vh; background: #f6f3ec; color: #3d443a; font-family: "Yu Gothic", sans-serif; }
+.app [hidden] { display: none; }
+.recordLink { display: block; margin-top: 18px; color: #43513b; font-size: 12px; line-height: 1.8; }
 .library { min-width: 0; }
 .recentHint { color: #818578; font-size: 10px; margin: 20px 0 0; }
 .shelf.recentShelf { display: flex; gap: 20px; overflow-x: auto; padding: 18px 8px 0; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: #b9bca9 #f0eee5; }
