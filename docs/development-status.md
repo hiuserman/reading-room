@@ -1,4 +1,14 @@
 # 実装状況
+## 最新追記 2026-11-23（以下の過去記録より優先）
+- S3＋CloudFrontのフロント公開、API Gateway＋Lambda＋GinのGET /api/healthは利用者が疎通確認済み。DB疎通は行わない。
+- Cognito User Pool・メール自己登録・Hosted UI・公開クライアント・独自scope・API Gateway JWT authorizerをTerraformで作成済み。
+- フロントにPKCEログイン、トップでのcallback処理、ログアウト、期限切れ案内を追加。実アカウントのメール確認を含む通し確認は利用者が実施する。
+- JWT authorizerを適用した業務APIルートはまだない。healthのみ公開。本棚参加権限・GET /api/me・Usersの永続化は未実装。
+- ローカルGoの本登録処理は維持。Lambdaでは本登録ルートを登録しない。今回Goコードは変更していない。
+- API GatewayのCORSはCloudFront・localhost:3000からGETとAuthorization/Content-Typeを許可。ローカルGoのCORSとは別設定。
+- 詳細と次のGo課題は[認証引き継ぎ](auth-handoff.md)。モックは引き続きサンプルデータ。
+
+## 過去の確認記録
 2026-11-16 ／ 手元のコードを確認。GitHub側のマージ状態とは別。
 
 ## 実コード

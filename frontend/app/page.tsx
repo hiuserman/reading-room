@@ -1,15 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import AuthPanel from "./auth/auth-panel";
 
-type ConnectionState = "checking" | "connected" | "database-error" | "connection-error";
+type ConnectionState = "checking" | "connected" | "service-error" | "connection-error";
 
 const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080").replace(/\/$/, "");
 const healthUrl = `${apiBaseUrl}/api/health`;
 const messages: Record<ConnectionState, { title: string; detail: string; label: string }> = {
   checking: { title: "接続を確認しています", detail: "Go APIの応答を確認します。現在のhealthはDB接続を検査しません。", label: "確認中" },
   connected: { title: "Go APIに接続できました", detail: "画面からAPIへ通信できています。DBへの接続成功を示すものではありません。", label: "接続済み" },
-  "database-error": { title: "DynamoDB に接続できません", detail: "Go APIは応答しています。DBの起動状態とバックエンドのログを確認してください。", label: "DB接続エラー" },
+  "service-error": { title: "APIが一時的に利用できません", detail: "Go APIは応答しています。バックエンドのログを確認してください。DB接続の失敗とは断定できません。", label: "API応答エラー" },
   "connection-error": { title: "APIとの接続を確認してください", detail: "APIの起動状態、接続先URL、CORS設定を確認して、もう一度お試しください。", label: "接続エラー" },
 };
 
@@ -34,7 +35,7 @@ export default function Home() {
       if (response.ok && status === "ok") {
         setConnection("connected");
       } else if (response.status === 503 && status === "unavailable") {
-        setConnection("database-error");
+        setConnection("service-error");
       } else {
         setConnection("connection-error");
       }
@@ -63,7 +64,7 @@ export default function Home() {
     <main className="workspace">
       <header className="header">
         <a className="brand" href="/" aria-label="私の本棚 ホーム"><span aria-hidden="true">▥</span> 私の本棚</a>
-        <span className="environment"><span /> LOCAL DEVELOPMENT</span>
+        <span className="environment"><span /> API CONNECTION CHECK</span>
       </header>
 
       <section className="intro">
@@ -73,13 +74,14 @@ export default function Home() {
         <div className="books" aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
       </section>
 
+      <AuthPanel />
       <section className="connection-card" aria-labelledby="connection-heading">
         <div className="card-header"><p className="eyebrow">接続確認</p><span className={`badge ${connection}`}>{message.label}</span></div>
         <div role="status" aria-live="polite" aria-atomic="true">
           <h2 id="connection-heading">{message.title}</h2>
           <p className="detail">{message.detail}</p>
         </div>
-        <ol className="flow" aria-label="通信経路"><li>Next.js<span>画面</span></li><li>Go API<span>バックエンド</span></li><li>DynamoDB<span>データベース</span></li></ol>
+        <ol className="flow" aria-label="通信経路"><li>Next.js<span>画面</span></li><li>Go API<span>バックエンド</span></li></ol>
         <div className="endpoint"><span>確認先</span><code>{healthUrl}</code></div>
         <div className="card-footer">
           <span className="timestamp">{checkedAt ? `最終確認 ${checkedAt}` : "初回接続を確認中"}</span>
@@ -89,14 +91,14 @@ export default function Home() {
       <section className="progress-card" aria-labelledby="progress-heading">
         <p className="eyebrow">IMPLEMENTATION STATUS</p>
         <h2 id="progress-heading">できることと、これから</h2>
-        <p className="detail">以下はコード確認時点（2026年11月16日）の状況です。接続確認の成功は、各機能の完成を意味しません。</p>
+        <p className="detail">以下はコード確認時点（2026年11月23日）の状況です。接続確認の成功は、各機能の完成を意味しません。</p>
         <dl className="progress-list">
-          <div><dt>API疎通確認 <span className="badge connected">実装済み</span></dt><dd>GET /api/health は固定のokを返します。現コードのCORS設定は未対応です。</dd></div>
-          <div><dt>本の登録 <span className="badge">試作</span></dt><dd>JSONのタイトル・著者をPOSTで受け取り、UUIDを付けてShelfBooksへ保存します。入力検証と日時は改善予定です。</dd></div>
+          <div><dt>API疎通確認 <span className="badge connected">実装済み</span></dt><dd>GET /api/health は固定のokを返します。DB接続は検査しません。</dd></div>
+          <div><dt>本の登録 <span className="badge">試作</span></dt><dd>ローカルではタイトル・著者を受け取りShelfBooksへ保存します。AWSではまだ公開していません。入力検証と日時は改善予定です。</dd></div>
           <div><dt>一覧・投稿・読書状態 <span className="badge">未実装</span></dt><dd>一覧のDB関数はありますがGETルートは未登録です。投稿・現在ページ・読書状態のAPIはこれからです。</dd></div>
-          <div><dt>認証・共有・AWS公開 <span className="badge">設計中</span></dt><dd>現在はDocker Composeによるローカル環境です。</dd></div>
+          <div><dt>認証・共有 <span className="badge">構築中</span></dt><dd>Cognitoの登録・ログイン導線を追加しています。本棚参加権限とユーザー情報APIは未実装です。公開APIはhealthのみです。</dd></div>
         </dl>
-        <div className="reference-links"><a href="http://localhost:8001/" target="_blank" rel="noreferrer">DB管理画面を開く ↗</a><a href="/mock">投稿・進捗の見本を見る →</a></div>
+        <div className="reference-links"><a href="/mock">投稿・進捗の見本を見る →</a></div>
         <p className="detail">モックはサンプルデータのみで、DBとは未接続です。再読み込みすると初期状態に戻ります。</p>
       </section>
       <footer className="footer"><span>共同本棚 · 開発環境</span><span>React + TypeScript / Go / DynamoDB</span></footer>
