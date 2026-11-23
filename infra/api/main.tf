@@ -62,7 +62,7 @@ resource "aws_apigatewayv2_api" "api" {
       "https://dwryuh9by77z3.cloudfront.net",
       "http://localhost:3000"
     ]
-    allow_methods = ["GET"]
+    allow_methods = ["GET", "POST"]
     allow_headers = ["Authorization", "Content-Type"]
     max_age       = 300
   }
@@ -130,6 +130,10 @@ resource "aws_lambda_function" "api" {
       AWS_LWA_PORT                           = "8080"
       AWS_LWA_READINESS_CHECK_PATH           = "/api/health"
       AWS_LWA_READINESS_CHECK_HEALTHY_STATUS = "200"
+      USERS_TABLE_NAME                       = aws_dynamodb_table.users.name
+      COGNITO_ISSUER                         = "https://cognito-idp.ap-northeast-1.amazonaws.com/${aws_cognito_user_pool.readers.id}"
+      COGNITO_CLIENT_ID                      = aws_cognito_user_pool_client.web.id
+      COGNITO_REQUIRED_SCOPE                 = "reading-room/access"
     }
   }
 
