@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { User } from "oidc-client-ts";
 import { authConfigured, getAuthManager, initializeAuth, login, logout } from "./session";
+import ProfilePanel from "./profile-panel";
 
 export default function AuthPanel() {
   const [user, setUser] = useState<User | null>(null);
@@ -40,6 +41,7 @@ export default function AuthPanel() {
       <p className="detail" role="status">{!ready ? "ログイン状態を確認しています…" : user ? `こんにちは、${user.profile.email ?? "読者さん"}` : "メールアドレスで登録できます。ログイン画面の「Sign up」から新規登録してください。"}</p>
       {error && <p role="alert" className="detail">{error}</p>}
       <button disabled={!ready || busy} onClick={() => void act(user ? logout : login)}>{busy ? "移動しています…" : user ? "ログアウト" : "登録・ログイン"}</button>
+      {user && !busy && <ProfilePanel key={user.profile.sub} userId={user.profile.sub} />}
     </>}
     <p className="detail">本棚への参加・本の保存は準備中です。画面の見本とは別のアカウント機能です。</p>
   </section>;

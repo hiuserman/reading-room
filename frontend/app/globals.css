@@ -21,6 +21,18 @@ h1 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-size: clamp(3
 .books i:nth-child(5) { height: 113px; background: #c2c8b2; }
 .books i:nth-child(6) { height: 126px; background: #a36d55; transform: rotate(-9deg); transform-origin: bottom; margin-left: 11px; }
 .connection-card { background: #fffefa; border: 1px solid var(--line); border-radius: 16px; padding: 30px 34px; box-shadow: 0 10px 35px #243d3105; }
+.connection-card + .connection-card { margin-top: 24px; }
+.profile-panel { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.profile-panel h3 { font-size: 17px; margin: 0 0 12px; }
+.profile-panel label { display: block; font-size: 14px; margin: 18px 0 8px; font-weight: 700; }
+.profile-panel input { display: block; width: 100%; max-width: 420px; border: 1px solid #89978c; border-radius: 7px; padding: 12px; font: inherit; font-size: 16px; color: var(--ink); background: white; }
+.profile-panel input:focus-visible { outline: 3px solid #a26938; outline-offset: 3px; }
+.profile-panel button { margin-top: 16px; }
+.profile-name { font-size: 24px; font-weight: 700; overflow-wrap: anywhere; }
+.profile-name span { font-size: 14px; font-weight: 400; }
+.profile-error { color: #943f24; font-size: 14px; line-height: 1.8; }
+.profile-secondary { background: #e7ece4; color: var(--ink); }
+.profile-secondary:hover { background: #d6dfd2; }
 .card-header, .card-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .badge { font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 20px; background: #edf0e8; color: #5c6d59; }
 .badge.connected { color: #35634c; background: #e7efe4; }

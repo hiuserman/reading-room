@@ -1,4 +1,9 @@
 # 実装状況
+## プロフィールAPI接続の追記（以下の記録より優先）
+- GoのGET/POST /api/me、JWT検証、Usersテーブル・IAM・認証付きAPI Gatewayルートが実装された。未認証の401は利用者が確認済み。
+- フロントはアクセストークンで/api/meを取得し、未登録なら表示名フォーム、登録成功なら返却されたプロフィールを表示する。再取得・401・403・409・通信エラーに対応。表示名の編集APIはない。
+- フロントのJSONはGoに合わせてuser_id/display_name/created_at。認証済みの実アカウントによる404→201→200の通し確認は未確認。モックとは独立。
+
 ## 最新追記 2026-11-23（以下の過去記録より優先）
 - S3＋CloudFrontのフロント公開、API Gateway＋Lambda＋GinのGET /api/healthは利用者が疎通確認済み。DB疎通は行わない。
 - Cognito User Pool・メール自己登録・Hosted UI・公開クライアント・独自scope・API Gateway JWT authorizerをTerraformで作成済み。

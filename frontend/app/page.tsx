@@ -96,7 +96,7 @@ export default function Home() {
           <div><dt>API疎通確認 <span className="badge connected">実装済み</span></dt><dd>GET /api/health は固定のokを返します。DB接続は検査しません。</dd></div>
           <div><dt>本の登録 <span className="badge">試作</span></dt><dd>ローカルではタイトル・著者を受け取りShelfBooksへ保存します。AWSではまだ公開していません。入力検証と日時は改善予定です。</dd></div>
           <div><dt>一覧・投稿・読書状態 <span className="badge">未実装</span></dt><dd>一覧のDB関数はありますがGETルートは未登録です。投稿・現在ページ・読書状態のAPIはこれからです。</dd></div>
-          <div><dt>認証・共有 <span className="badge">構築中</span></dt><dd>Cognitoの登録・ログイン導線を追加しています。本棚参加権限とユーザー情報APIは未実装です。公開APIはhealthのみです。</dd></div>
+          <div><dt>認証・プロフィール <span className="badge">連携中</span></dt><dd>Cognitoでログインし、表示名をユーザーAPIへ保存・取得できます。本棚への参加と共有権限は準備中です。</dd></div>
         </dl>
         <div className="reference-links"><a href="/mock">投稿・進捗の見本を見る →</a></div>
         <p className="detail">モックはサンプルデータのみで、DBとは未接続です。再読み込みすると初期状態に戻ります。</p>
