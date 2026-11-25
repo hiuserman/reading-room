@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "私の本棚 | 開発環境",
-  description: "2D仮想本棚と読書管理アプリの接続確認画面",
+  title: "綴り — 同じ時間に、違うページを。",
+  description: "読んだ日も、ひと休みの日も。本とひとことを持ち寄る、小さな読書の場所。",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

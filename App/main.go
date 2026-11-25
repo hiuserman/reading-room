@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hiuserman/auth"
 	"github.com/hiuserman/book"
+	"github.com/hiuserman/shelf"
 	"github.com/hiuserman/user"
 )
 
@@ -58,6 +59,13 @@ func main() {
 			log.Fatal("USERS_TABLE_NAME environment variable is not set")
 		}
 
+		shelvesTable := os.Getenv("SHELVES_TABLE_NAME")
+		membersTable := os.Getenv("MEMBERS_TABLE_NAME")
+
+		if shelvesTable == "" || membersTable == "" {
+			log.Fatal("本棚のテーブル名が設定されていません")
+		}
+
 		// 公開鍵のキャッシュサーバ全体で共有
 		// リクエストごとに取得しない
 		authCtx, cancelAuth := context.WithCancel(context.Background())
@@ -74,6 +82,8 @@ func main() {
 		}
 
 		userHandler := user.NewHandler(db, tableName)
+		shelfService := shelf.NewService(db, shelvesTable, membersTable, tableName)
+		shelfHandler := shelf.NewHandler(shelfService)
 
 		// このグループのルートは必ず認証を通る
 		protected := api.Group("")
@@ -81,6 +91,7 @@ func main() {
 
 		protected.GET("/me", userHandler.GetMe)
 		protected.POST("/me", userHandler.CreateMe)
+		protected.POST("/shelves", shelfHandler.CreateShelf)
 	}
 
 	log.Println("Ginサーバーをポート8080で起動します")

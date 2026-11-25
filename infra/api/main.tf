@@ -131,6 +131,8 @@ resource "aws_lambda_function" "api" {
       AWS_LWA_READINESS_CHECK_PATH           = "/api/health"
       AWS_LWA_READINESS_CHECK_HEALTHY_STATUS = "200"
       USERS_TABLE_NAME                       = aws_dynamodb_table.users.name
+      SHELVES_TABLE_NAME                     = aws_dynamodb_table.shelves.name
+      MEMBERS_TABLE_NAME                     = aws_dynamodb_table.shelf_members.name
       COGNITO_ISSUER                         = "https://cognito-idp.ap-northeast-1.amazonaws.com/${aws_cognito_user_pool.readers.id}"
       COGNITO_CLIENT_ID                      = aws_cognito_user_pool_client.web.id
       COGNITO_REQUIRED_SCOPE                 = "reading-room/access"
