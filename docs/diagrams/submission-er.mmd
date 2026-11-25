@@ -1,0 +1,63 @@
+erDiagram
+  Users ||--o{ ShelfMembers : joins
+  Shelves ||--|{ ShelfMembers : includes
+  Shelves ||--o{ ShelfBooks : stores
+  Users ||--o{ ReadingRecords : tracks
+  ShelfBooks ||--o{ ReadingRecords : latest
+  ShelfBooks ||--o{ ReadingPosts : moments
+  Users ||--o{ ReadingPosts : writes
+  Users ||--o{ RequestDedup : retries
+  Shelves ||--o{ ReadingPosts : feed
+  Users {
+    string userId PK
+    string displayName
+  }
+  Shelves {
+    string shelfId PK
+    string name
+  }
+  ShelfMembers {
+    string shelfId PK
+    string userId PK "sort key"
+    string role
+  }
+  ShelfBooks {
+    string shelfId PK
+    string bookId PK "sort key"
+    string title
+    string[] authors
+    string createdAt
+    string addedBy
+    string coverUrl
+  }
+  ReadingRecords {
+    string shelfId PK
+    string recordKey PK "userId#bookId"
+    string userId
+    string bookId
+    string status
+    int currentPage
+    string updatedAt
+    string finishedAt
+    int version
+  }
+  ReadingPosts {
+    string shelfId PK
+    string postKey PK "sort key"
+    string postId
+    string bookId
+    string userId
+    string status
+    int currentPage
+    string comment
+    boolean containsSpoiler
+    string createdAt
+  }
+
+  RequestDedup {
+    string scopeKey PK
+    string requestId PK
+    string payloadHash
+    map response
+    string createdAt
+  }

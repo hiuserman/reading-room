@@ -29,3 +29,7 @@ Thumbs.db
 *.tfvars
 # Personal workspace links are not needed for public sharing
 docs/notion-index.md
+# Lambda build artifacts
+App/dist/
+# Terraform saved plans
+*.tfplan

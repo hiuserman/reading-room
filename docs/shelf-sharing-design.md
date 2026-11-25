@@ -1,3 +1,5 @@
+> 過去案（2026-11-05）。提出用の範囲は [requirements.md](requirements.md) と [data-model.md](data-model.md) を優先してください。
+
 # 個人ライブラリと本棚共有の設計案
 
 > 旧案。2026-11-05に共同本棚中心へ変更。最新の設計は [data-model.md](data-model.md) と [requirements.md](requirements.md) を参照。下記の個人ライブラリ方式は現在の実装方針に採用しない。

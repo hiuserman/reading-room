@@ -1,0 +1,26 @@
+.section { margin: 0 0 48px; }
+.heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.heading p,.kicker { font: 10px monospace; letter-spacing: .16em; color: #747c6a; }
+.heading h2 { font: 34px "Yu Mincho",serif; margin: 8px 0; }
+.heading span,.heading a { font-size: 12px; color: #59664e; }
+.demo { font-size: 11px; line-height: 1.8; color: #66715f; margin: 20px 0; }
+.layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(270px, 1fr); gap: 28px; align-items: start; }
+.feed { display: grid; gap: 12px; }
+.card { position: relative; min-height: 310px; border-radius: 14px; padding: 24px 28px; color: #fffdf1; overflow: hidden; display: grid; grid-template-columns: 150px 1fr; gap: 28px; align-items: center; isolation: isolate; }
+.card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(120deg,#0003,transparent,#0006); z-index: -1; }
+.cardTop { grid-column: 1 / -1; display: flex; justify-content: space-between; font-size: 12px; }
+.cardTop span:last-child { border: 1px solid #ffffff70; border-radius: 24px; padding: 3px 12px; }
+.book { min-height: 192px; background: #ffffff12; border-left: 5px solid #ffffff40; box-shadow: 6px 6px 0 #0002; padding: 18px 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+.book small { font-size: 7px; letter-spacing: .08em; }.book h3 { font: 22px "Yu Mincho",serif; overflow-wrap: anywhere; }.book span { font-size: 10px; }
+.moment { min-width: 0; }.moment time { font: bold 42px Georgia,serif; }.moment p { font-size: 12px; line-height: 1.9; }.moment p span { white-space: nowrap; }
+.moment .comment { font-size: 14px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.moment button { background: #fffdf1; color: #354332; border-radius: 6px; padding: 10px 12px; font-size: 11px; }
+.caption { font-size: 11px; color: #66715f; }
+.form { padding: 28px; background: #fffdf7; border: 1px solid #dedfd3; border-radius: 14px; scroll-margin-top: 20px; }
+.form h3 { font: 23px "Yu Mincho",serif; margin: 12px 0 22px; }.selected { display: flex; flex-direction: column; gap: 8px; background: #f0f1e7; padding: 16px; border-radius: 8px; }.selected small,.selected span { font-size: 11px; color: #68745f; }
+.hint { font-size: 11px; line-height: 1.8; color: #66715f; }.form label { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; font-size: 12px; }
+.form input,.form select,.form textarea { box-sizing: border-box; width: 100%; min-width: 0; border: 1px solid #c6cbbb; border-radius: 6px; padding: 11px; background: #fff; color: #354332; font: inherit; }.form textarea { resize: vertical; }
+.form .checkbox { flex-direction: row; align-items: center; line-height: 1.6; }.checkbox input { width: 17px; height: 17px; accent-color: #526148; }
+.form .submit { width: 100%; padding: 14px; background: #526148; color: white; border-radius: 6px; }
+.section button:focus-visible,.section select:focus-visible,.section textarea:focus-visible,.section input:focus-visible { outline: 3px solid #bd743c; outline-offset: 3px; }
+@media(max-width: 760px) { .layout { grid-template-columns: 1fr; }.card { padding: 20px; grid-template-columns: 110px 1fr; gap: 18px; min-height: 275px; }.book { min-height: 160px; }.book h3 { font-size: 18px; }.moment time { font-size: 34px; }.heading h2 { font-size: 29px; }.form { padding: 22px; } }
